@@ -1,0 +1,30 @@
+name: SonarQube Scan
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run unit tests
+        run: vendor/bin/phpunit --coverage-clover coverage.xml
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v1
+        env:
+          SONAR_HOST_URL: http://YOUR_IP:9000
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
